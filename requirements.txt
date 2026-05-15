@@ -1,0 +1,5 @@
+fastapi
+uvicorn[standard]
+numpy
+python-multipart
+huggingface_hub>=0.20
