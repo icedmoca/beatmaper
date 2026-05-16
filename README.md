@@ -53,6 +53,8 @@ Source: [github.com/icedmoca/beatmaper](https://github.com/icedmoca/beatmaper)
 curl -fsSL https://raw.githubusercontent.com/icedmoca/beatmaper/main/install.sh | bash
 ```
 
+The installer reopens your **keyboard** as stdin for `npm start` (via `/dev/tty`), so the **1 / 2 / 0** menu still works when the script is piped from `curl`—otherwise stdin would be the script stream and the menu would exit immediately.
+
 Optional: install somewhere else (directory must be empty or already this repo):
 
 ```bash

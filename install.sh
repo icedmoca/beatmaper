@@ -2,6 +2,7 @@
 # Beatmaper — clone (if needed), git pull, then npm start (TUI: browser vs Electron).
 # Usage:
 #   curl -fsSL https://raw.githubusercontent.com/icedmoca/beatmaper/main/install.sh | bash
+# Piped curl leaves stdin as the script; we run npm start with </dev/tty so the menu reads the keyboard.
 # Optional env:
 #   BEATMAPER_REPO   git URL (default: https://github.com/icedmoca/beatmaper.git)
 #   BEATMAPER_DIR    install path (default: ~/beatmaper, or current dir if it already looks like this repo)
@@ -53,4 +54,10 @@ echo "→ Updating (git pull)…"
 git pull --ff-only 2>/dev/null || true
 
 echo "→ Starting Beatmaper (npm install + setup, then choose browser or Electron)…"
-exec npm start
+# When this script was piped (curl … | bash), stdin is the script, not the keyboard.
+# Attach stdin to the real terminal so the npm start menu can read your choice.
+if [[ -r /dev/tty ]]; then
+  exec npm start < /dev/tty
+else
+  exec npm start
+fi

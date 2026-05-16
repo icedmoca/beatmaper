@@ -1,8 +1,26 @@
 import { spawn, spawnSync } from 'node:child_process';
+import fs from 'node:fs';
 import * as readline from 'node:readline/promises';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { stdin as input, stdout as output } from 'node:process';
+
+/** When stdin is not a TTY (e.g. curl … | bash), read the menu from the controlling terminal. */
+function openMenuInput() {
+  if (input.isTTY) return input;
+  if (process.platform === 'win32') {
+    try {
+      return fs.createReadStream('CONIN$');
+    } catch {
+      return input;
+    }
+  }
+  try {
+    return fs.createReadStream('/dev/tty');
+  } catch {
+    return input;
+  }
+}
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const shell = process.platform === 'win32';
@@ -76,7 +94,8 @@ async function main() {
     process.exit(1);
   }
 
-  const rl = readline.createInterface({ input, output });
+  const menuInput = openMenuInput();
+  const rl = readline.createInterface({ input: menuInput, output });
 
   output.write(`
   How do you want to run the app?
