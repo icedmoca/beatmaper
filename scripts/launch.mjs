@@ -26,6 +26,17 @@ function runNpmScript(name) {
 async function main() {
   installDeps();
 
+  const { ensureDatasetFromHuggingFace } = await import('./fetch-hf-dataset.mjs');
+  try {
+    await ensureDatasetFromHuggingFace(root, { log: (s) => output.write(s) });
+  } catch (err) {
+    output.write(`\n\x1b[31mCould not download the Hugging Face dataset.\x1b[0m\n${/** @type {Error} */ (err).message || err}\n`);
+    output.write(
+      '\nCheck your network. For higher rate limits, set HF_TOKEN.\nThen run: \x1b[1mnpm run fetch-dataset\x1b[0m\n',
+    );
+    process.exit(1);
+  }
+
   const rl = readline.createInterface({ input, output });
 
   output.write(`

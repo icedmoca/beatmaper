@@ -1,4 +1,45 @@
-# beatmaper
+# Beatmaper
+
+Beatmaper is a local web app that turns an uploaded audio file into a Beat Saber custom map ZIP. It includes:
+
+- A React/Vite frontend.
+- A FastAPI Python backend.
+- Audio analysis for tempo, beat peaks, bass peaks, vocal/mid peaks, and high-frequency accents.
+- A learned ranked-pattern model trained from ranked Beat Saber maps.
+- Multiple generation modes: Normal, Fun, Overkill, and Direct Instrument Mode.
+- A Three.js preview that simulates blocks moving toward sabers in sync with the generated song audio.
+- Exported Beat Saber map files: `Info.dat`, `ExpertStandard.dat`, and `song.egg`.
+
+This project is designed to run locally on your own computer. It does not require an online API once dependencies are installed.
+
+## What the app does
+
+When you upload a song:
+
+1. The backend receives the audio file.
+2. If the file is not already WAV, the backend uses **ffmpeg** to convert it to WAV for analysis.
+3. The backend analyzes the waveform and extracts:
+   - overall beats/onsets,
+   - bass events,
+   - vocal/mid-range events,
+   - high-frequency accent events,
+   - estimated BPM,
+   - section intensity.
+4. The generator creates Beat Saber notes using both:
+   - direct audio events from the song,
+   - learned note-pattern tendencies from ranked Beat Saber maps.
+5. The backend converts the song to **song.egg**, which is an Ogg/Vorbis audio file with the `.egg` extension used by Beat Saber maps.
+6. The backend writes a Beat Saber map folder and ZIP.
+7. The frontend shows the generated stats and a Three.js gameplay preview.
+8. You can download the generated ZIP and put it into your Beat Saber custom levels folder.
+
+## Important limitation
+
+This is an **experimental** generator. It can create valid Beat Saber-style files, but it is not guaranteed to make perfect human-authored maps. Beat Saber mapping is artistic and technical. You should still test maps in-game and refine them if you want polished results.
+
+The current generator tries to be readable by default in **Normal** mode, then lets you increase complexity through **Fun** and **Overkill** settings.
+
+---
 
 Source: [github.com/icedmoca/beatmaper](https://github.com/icedmoca/beatmaper)
 
@@ -10,7 +51,9 @@ You need [Node.js](https://nodejs.org/) (LTS includes `npm`). Then run **one** c
 git clone https://github.com/icedmoca/beatmaper.git && cd beatmaper && npm start
 ```
 
-`npm start` runs `npm install`, then shows a short **terminal menu**: pick **local website** (Vite in the browser) or **Electron** (desktop). Follow the URL or window it starts.
+`npm start` runs `npm install`, downloads the **Hugging Face** dataset [`icedmoca/beatmapmaker`](https://huggingface.co/datasets/icedmoca/beatmapmaker) into `models/` (skipped if files are already there), then shows a short **terminal menu**: pick **local website** (Vite in the browser) or **Electron** (desktop). Follow the URL or window it starts.
+
+To re-download model files (for example after a dataset update): `npm run fetch-dataset`. Override repo/revision with `BEATMAPER_HF_DATASET` and `BEATMAPER_HF_REV`. Force refresh: `BEATMAPER_FORCE_DATASET=1 npm run fetch-dataset`.
 
 If you already have the repo:
 
@@ -22,6 +65,7 @@ cd beatmaper && npm start
 
 | Command | What it does |
 |--------|----------------|
+| `npm run fetch-dataset` | Download / refresh `models/` from Hugging Face (`icedmoca/beatmapmaker`) |
 | `npm run dev` | Vite only (browser) |
 | `npm run electron:dev` | Vite + Electron desktop |
 
@@ -39,12 +83,11 @@ npm run preview
 
 ## Python backend and map models
 
-The FastAPI server under `backend/` can use **derived** JSON under `models/` (spacing profile, pattern model, optional `brain/` bundle). Those files are **not** committed: they are large or machine-specific. See `models/README.md` for what each file is.
+The FastAPI server under `backend/` reads **derived** JSON under `models/` (spacing profile, pattern model, `brain/dataset_brain.json`). Those files are **not** committed to Git; a fresh clone gets them automatically from Hugging Face when you run **`npm start`** (dataset [`icedmoca/beatmapmaker`](https://huggingface.co/datasets/icedmoca/beatmapmaker)) or anytime via **`npm run fetch-dataset`**.
 
-To rebuild from your own ranked map zips (that you have the rights to use):
+To rebuild from your own ranked map zips (that you have the rights to use) instead of HF:
 
 1. Drop `*.zip` archives into `data/ranked_zips/`, or set `BEATMAPER_RANKED_ZIPS` to a folder of zips.
 2. Run `python3 analyze_ranked_spacing.py` then `python3 train_ranked_patterns.py` (after `pip install -r requirements.txt` in a venv if you use one).
 
 Details: `data/README.md`.
-
