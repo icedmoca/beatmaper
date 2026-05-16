@@ -15,6 +15,44 @@ function installDeps() {
   output.write('\n\x1b[32mDependencies ready.\x1b[0m\n');
 }
 
+async function ensurePythonBackendDeps() {
+  const {
+    ensureProjectVenvExists,
+    resolvePythonPrefix,
+    pythonHasBackendDeps,
+    pipInstallRequirements,
+  } = await import('./python-env.mjs');
+
+  if (!ensureProjectVenvExists(root)) {
+    output.write(
+      '\n\x1b[33mWarning:\x1b[0m Could not create `.venv` (Python 3 not found on PATH?).\n' +
+        'Install Python 3, then run: `python3 -m venv .venv && .venv/bin/pip install -r requirements.txt`\n',
+    );
+    return;
+  }
+
+  const prefix = resolvePythonPrefix(root);
+  if (!prefix) {
+    output.write('\n\x1b[33mWarning:\x1b[0m No Python interpreter found for `.venv`.\n');
+    return;
+  }
+
+  if (pythonHasBackendDeps(prefix)) {
+    output.write('\n\x1b[2mPython API stack already installed (FastAPI / uvicorn in .venv).\x1b[0m\n');
+    return;
+  }
+
+  output.write(
+    '\n\x1b[1mbeatmaper\x1b[0m — installing Python API dependencies into `.venv` (pip)…\n\n',
+  );
+  const r = pipInstallRequirements(root, prefix);
+  if (r.status !== 0) {
+    output.write('\n\x1b[33mWarning:\x1b[0m pip install failed. Try manually:\n  .venv/bin/pip install -r requirements.txt\n');
+    return;
+  }
+  output.write('\n\x1b[32mPython API dependencies ready.\x1b[0m\n');
+}
+
 function runNpmScript(name) {
   const child = spawn('npm', ['run', name], { cwd: root, stdio: 'inherit', shell });
   child.on('exit', (code, signal) => {
@@ -25,6 +63,7 @@ function runNpmScript(name) {
 
 async function main() {
   installDeps();
+  await ensurePythonBackendDeps();
 
   const { ensureDatasetFromHuggingFace } = await import('./fetch-hf-dataset.mjs');
   try {

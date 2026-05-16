@@ -6,6 +6,9 @@ import { Reflector } from "three/examples/jsm/objects/Reflector.js";
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
 import "./style.css";
 extend({ Reflector, RoundedBoxGeometry });
+
+/** FastAPI base URL (override with Vite env `VITE_API_BASE` if needed). */
+const API_BASE = import.meta.env.VITE_API_BASE || "http://127.0.0.1:8008";
 class ErrorBoundary extends Component {
   constructor(p) {
     super(p);
@@ -1263,7 +1266,7 @@ function GameplayPreview({ res }) {
     [rawNotes],
   );
   const audioUrl = res?.audioPreview
-    ? "http://127.0.0.1:8008" + res.audioPreview
+    ? API_BASE + res.audioPreview
     : null;
   useEffect(() => {
     setPlaying(false);
@@ -1633,7 +1636,7 @@ function App() {
     fd.append("file", f);
     Object.entries(settings).forEach(([k, v]) => fd.append(k, String(v)));
     try {
-      let r = await fetch("http://127.0.0.1:8008/analyze", {
+      let r = await fetch(API_BASE + "/analyze", {
         method: "POST",
         body: fd,
       });
@@ -1647,7 +1650,11 @@ function App() {
       if (!r.ok) throw Error(j.detail || "backend failed");
       setRes(j);
     } catch (x) {
-      setErr(x.message || String(x));
+      let m = x?.message || String(x);
+      if (/failed to fetch|networkerror|load failed|network request failed/i.test(m)) {
+        m += ` — Is the API running at ${API_BASE}? Install Python deps (\`pip install -r requirements.txt\`), ffmpeg on PATH, then use \`npm start\` and choose browser or Electron so the backend starts with the UI.`;
+      }
+      setErr(m);
     } finally {
       setBusy(false);
       e.target.value = "";
@@ -1710,13 +1717,13 @@ function App() {
             </b>
             <b>{res.audioFile || "song.egg"}</b>
           </div>
-          <a className="download" href={"http://127.0.0.1:8008" + res.download}>
+          <a className="download" href={API_BASE + res.download}>
             Download Beat Saber ZIP
           </a>
           {res.project && (
             <a
               className="download secondary"
-              href={"http://127.0.0.1:8008" + res.project}
+              href={API_BASE + res.project}
               target="_blank"
             >
               Open internal project JSON
@@ -1725,7 +1732,7 @@ function App() {
           {res.projectGrid && (
             <a
               className="download secondary"
-              href={"http://127.0.0.1:8008" + res.projectGrid}
+              href={API_BASE + res.projectGrid}
               target="_blank"
             >
               Open beat/grid view

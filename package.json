@@ -5,9 +5,10 @@
   "scripts": {
     "start": "node scripts/launch.mjs",
     "fetch-dataset": "node scripts/fetch-hf-dataset.mjs",
-    "dev": "vite --host 127.0.0.1",
+    "backend:dev": "node scripts/run-backend.mjs",
+    "dev": "concurrently -k -c auto -n api,vite \"npm run backend:dev\" \"vite --host 127.0.0.1\"",
     "dev:electron": "vite --host 127.0.0.1 --port 9240 --strictPort",
-    "electron:dev": "cross-env ELECTRON_DEV=1 concurrently -k \"npm run dev:electron\" \"wait-on http://127.0.0.1:9240 && electron .\"",
+    "electron:dev": "cross-env ELECTRON_DEV=1 concurrently -k -c auto -n api,vite,electron \"npm run backend:dev\" \"npm run dev:electron\" \"wait-on -t 120000 http://127.0.0.1:9240 http://127.0.0.1:8008/health && electron .\"",
     "electron:pack": "vite build && electron .",
     "build": "vite build",
     "preview": "vite preview --host 127.0.0.1"

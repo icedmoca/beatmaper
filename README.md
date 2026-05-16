@@ -45,13 +45,27 @@ Source: [github.com/icedmoca/beatmaper](https://github.com/icedmoca/beatmaper)
 
 ## Quick start
 
-You need [Node.js](https://nodejs.org/) (LTS includes `npm`). Then run **one** command:
+You need:
+
+- [Node.js](https://nodejs.org/) (LTS includes `npm`)
+- [Python](https://www.python.org/) **3.10+** with `pip`
+- [**ffmpeg**](https://ffmpeg.org/) on your `PATH` (used to decode/convert audio)
+
+The first time you run **`npm start`**, it creates a **local `.venv`**, then runs **`pip install -r requirements.txt`** inside it when FastAPI / uvicorn are missing (PEP 668 / “externally managed” systems like Arch are handled this way). You can still install manually anytime:
+
+```bash
+pip install -r requirements.txt
+```
+
+On Windows, if `python3` is missing, use `py -3 -m pip install -r requirements.txt`. The dev scripts try `python3`, then `python`, then `py -3`.
+
+Then run **one** command:
 
 ```bash
 git clone https://github.com/icedmoca/beatmaper.git && cd beatmaper && npm start
 ```
 
-`npm start` runs `npm install`, downloads the **Hugging Face** dataset [`icedmoca/beatmapmaker`](https://huggingface.co/datasets/icedmoca/beatmapmaker) into `models/` (skipped if files are already there), then shows a short **terminal menu**: pick **local website** (Vite in the browser) or **Electron** (desktop). Follow the URL or window it starts.
+`npm start` runs `npm install`, installs Python API dependencies via **pip** when needed, downloads the **Hugging Face** dataset [`icedmoca/beatmapmaker`](https://huggingface.co/datasets/icedmoca/beatmapmaker) into `models/` (skipped if files are already there), then shows a short **terminal menu**: pick **local website** (Vite in the browser) or **Electron** (desktop). **Both options start the FastAPI backend** on [http://127.0.0.1:8008](http://127.0.0.1:8008) together with the UI, so uploads work. Follow the URL or window it starts.
 
 To re-download model files (for example after a dataset update): `npm run fetch-dataset`. Override repo/revision with `BEATMAPER_HF_DATASET` and `BEATMAPER_HF_REV`. Force refresh: `BEATMAPER_FORCE_DATASET=1 npm run fetch-dataset`.
 
@@ -66,8 +80,9 @@ cd beatmaper && npm start
 | Command | What it does |
 |--------|----------------|
 | `npm run fetch-dataset` | Download / refresh `models/` from Hugging Face (`icedmoca/beatmapmaker`) |
-| `npm run dev` | Vite only (browser) |
-| `npm run electron:dev` | Vite + Electron desktop |
+| `npm run backend:dev` | FastAPI only at [http://127.0.0.1:8008](http://127.0.0.1:8008) (uses `scripts/run-backend.mjs` to pick `python3` / `python` / `py -3`) |
+| `npm run dev` | **Vite + FastAPI** (browser UI + API for uploads) |
+| `npm run electron:dev` | **Vite + FastAPI + Electron** (desktop) |
 
 ## Build
 

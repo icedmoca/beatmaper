@@ -18,7 +18,7 @@ This folder holds **dataset-style artifacts** produced by a **Python** training 
 
 > **Scope:** These files summarize **note timing, density, co-note patterns, and style priors** derived from real ranked maps—not raw audio or full map zips. Downstream tools can treat them as a **compact statistical prior** for generation, analysis, or evaluation.
 
-> **In this Git repository:** the large JSON outputs and training logs are **not committed** (see the repo root `.gitignore`). After clone, generate them locally with `analyze_ranked_spacing.py` / `train_ranked_patterns.py`, or ship them via releases / Git LFS as you prefer.
+> **In this Git repository:** large JSON outputs are **not committed** (see the repo root `.gitignore`). After `git clone`, run **`npm start`** or **`npm run fetch-dataset`** to pull the same files from the Hugging Face dataset [`icedmoca/beatmapmaker`](https://huggingface.co/datasets/icedmoca/beatmapmaker) into `models/`. Alternatively, regenerate locally with `analyze_ranked_spacing.py` / `train_ranked_patterns.py`, or ship assets via releases / Git LFS as you prefer.
 
 > **License:** YAML uses `license: other` because rights depend on **original map / platform terms**. This repo holds **derived statistics and models** only. Replace with a concrete SPDX id (for example `MIT` for your scripts) after your own legal review.
 
