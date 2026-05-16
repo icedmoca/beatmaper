@@ -1,6 +1,9 @@
 # Beatmaper
 
-Beatmaper is a local web app that turns an uploaded audio file into a Beat Saber custom map ZIP. It includes:
+> Beatmaper is a local web app that turns an uploaded audio file into a Beat Saber custom map ZIP. It includes:
+
+[![Hugging Face Dataset](https://img.shields.io/badge/HuggingFace-BeatMapMaker-yellow?logo=huggingface&logoColor=white)](https://huggingface.co/datasets/icedmoca/beatmapmaker)
+
 
 - A React/Vite frontend.
 - A FastAPI Python backend.
