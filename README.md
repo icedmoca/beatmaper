@@ -45,6 +45,29 @@ Source: [github.com/icedmoca/beatmaper](https://github.com/icedmoca/beatmaper)
 
 ## Quick start
 
+### One command (paste in Terminal)
+
+**macOS, Linux, or [Git Bash](https://git-scm.com/downloads) on Windows** — clones/updates the app under `~/beatmaper` and runs **`npm start`** (install + Hugging Face models + **TUI** to pick browser or Electron):
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/icedmoca/beatmaper/main/install.sh | bash
+```
+
+Optional: install somewhere else (directory must be empty or already this repo):
+
+```bash
+export BEATMAPER_DIR="$HOME/code/beatmaper"
+curl -fsSL https://raw.githubusercontent.com/icedmoca/beatmaper/main/install.sh | bash
+```
+
+If you already cloned the repo, you can run the same script from any directory (it detects a checkout in the current folder) or:
+
+```bash
+bash install.sh
+```
+
+---
+
 You need:
 
 - [Node.js](https://nodejs.org/) (LTS includes `npm`)
@@ -59,23 +82,21 @@ pip install -r requirements.txt
 
 On Windows, if `python3` is missing, use `py -3 -m pip install -r requirements.txt`. The dev scripts try `python3`, then `python`, then `py -3`.
 
-Then run **one** command:
+If you prefer not to use `install.sh`, clone and start manually:
 
 ```bash
 git clone https://github.com/icedmoca/beatmaper.git && cd beatmaper && npm start
 ```
 
-`npm start` runs `npm install`, installs Python API dependencies via **pip** when needed, downloads the **Hugging Face** dataset [`icedmoca/beatmapmaker`](https://huggingface.co/datasets/icedmoca/beatmapmaker) into `models/` (skipped if files are already there), then shows a short **terminal menu**: pick **local website** (Vite in the browser) or **Electron** (desktop). **Both options start the FastAPI backend** on [http://127.0.0.1:8008](http://127.0.0.1:8008) together with the UI, so uploads work. Follow the URL or window it starts.
-
-To re-download model files (for example after a dataset update): `npm run fetch-dataset`. Override repo/revision with `BEATMAPER_HF_DATASET` and `BEATMAPER_HF_REV`. Force refresh: `BEATMAPER_FORCE_DATASET=1 npm run fetch-dataset`.
-
-If you already have the repo:
+If you already cloned into `beatmaper`:
 
 ```bash
 cd beatmaper && npm start
 ```
 
-## Other scripts
+`npm start` runs `npm install`, installs Python API dependencies into **`.venv`** when needed, downloads the **Hugging Face** dataset [`icedmoca/beatmapmaker`](https://huggingface.co/datasets/icedmoca/beatmapmaker) into `models/` (skipped if files are already there), then shows a short **terminal menu**: pick **local website** (Vite in the browser) or **Electron** (desktop). **Both options start the FastAPI backend** on [http://127.0.0.1:8008](http://127.0.0.1:8008) together with the UI, so uploads work. Follow the URL or window it starts.
+
+To re-download model files (for example after a dataset update): `npm run fetch-dataset`. Override repo/revision with `BEATMAPER_HF_DATASET` and `BEATMAPER_HF_REV`. Force refresh: `BEATMAPER_FORCE_DATASET=1 npm run fetch-dataset`.
 
 | Command | What it does |
 |--------|----------------|
