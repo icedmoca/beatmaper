@@ -5,7 +5,6 @@ from collections import Counter, defaultdict
 from dataclasses import dataclass
 
 ROOT = Path(__file__).resolve().parents[1]
-CORPUS = Path('/home/dad/Desktop/beat/pro/all_ranked_zips')
 BRAIN_DIR = ROOT / 'models' / 'brain'
 BRAIN_DIR.mkdir(parents=True, exist_ok=True)
 DATASET_BRAIN = BRAIN_DIR / 'dataset_brain.json'

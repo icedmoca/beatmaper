@@ -1,1 +1,29 @@
-{"scripts":{"dev":"vite --host 127.0.0.1","build":"vite build","preview":"vite preview --host 127.0.0.1"},"dependencies":{"@react-three/fiber":"^9.6.1","@vitejs/plugin-react":"latest","lucide-react":"latest","react":"latest","react-dom":"latest","three":"latest","vite":"latest"}}
+{
+  "name": "beatmaper",
+  "private": true,
+  "main": "electron/main.cjs",
+  "scripts": {
+    "start": "node scripts/launch.mjs",
+    "dev": "vite --host 127.0.0.1",
+    "dev:electron": "vite --host 127.0.0.1 --port 9240 --strictPort",
+    "electron:dev": "cross-env ELECTRON_DEV=1 concurrently -k \"npm run dev:electron\" \"wait-on http://127.0.0.1:9240 && electron .\"",
+    "electron:pack": "vite build && electron .",
+    "build": "vite build",
+    "preview": "vite preview --host 127.0.0.1"
+  },
+  "dependencies": {
+    "@react-three/fiber": "^9.6.1",
+    "@vitejs/plugin-react": "latest",
+    "lucide-react": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "three": "latest",
+    "vite": "latest"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "cross-env": "^7.0.3",
+    "electron": "^35.1.5",
+    "wait-on": "^8.0.1"
+  }
+}
